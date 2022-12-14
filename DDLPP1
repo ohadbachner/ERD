@@ -1,0 +1,119 @@
+create table Employee(
+    EId INTEGER Primary key, --first number is not 0
+    Name VARCHAR(100) not null,
+    check (EID >= 100000000 and EId <= 999999999),
+    DepName VARCHAR(100) not null,
+    foreign key (DepName) references Department
+);
+
+create table Manager(
+    EId INTEGER Primary key, --first number is not 0
+    Salary INTEGER not null,
+    check (Salary>=1),
+    check (EID >= 100000000 and EId <= 999999999),
+    foreign key (EId) references Employee
+);
+
+create table TechExpert(
+    EId INTEGER Primary key, --first number is not 0
+    ExpertSection VARCHAR(100) not null,
+    check (EID >= 100000000 and EId <= 999999999),
+    foreign key (EId) references Employee
+);
+
+create table Department(
+    DepName VARCHAR(100) primary key,
+    Description VARCHAR(100) not null,
+    ManagerId INTEGER not null,
+    check (ManagerId >= 100000000 and ManagerId <= 999999999),
+    foreign key (ManagerId) references Manager(EId)
+);
+
+create table Family(
+    FamNum INTEGER primary key,
+    Rate INTEGER not null,
+    LastName VARCHAR(100) not null,
+    check (Rate > 0 and Rate < 10),
+    check (FamNum>=0)
+);
+
+create table FamilyGuy(
+    FamNum INTEGER,
+    FirstName VARCHAR(100),
+    Phone VARCHAR(10) not null,
+    DateOfBirth VARCHAR(100) not null,
+    primary key (FamNum, FirstName),
+    foreign key (FamNum) references Family,
+    check (FamNum>=0),
+    check (isnumeric(Phone) = 1)
+    --לעשות בדיקות על התאריך
+);
+
+create table RegFamily(
+    FamNum INTEGER primary key,
+    check (FamNum>=0),
+    FOREIGN KEY (FamNum) references Family,
+);
+
+create table PremFamily(
+    FamNum INTEGER primary key,
+    check (FamNum>=0),
+    FOREIGN KEY (FamNum) references Family,
+    TechId INTEGER not null, --first number is not 0
+    check (TechId >= 100000000 and TechId<= 999999999),
+    FOREIGN KEY (TechId) references TechExpert (EId)
+);
+
+create table QuittingRequest(
+    FamNum INTEGER primary key,
+    Date VARCHAR(100),
+    ManagerId INTEGER, --first number is not 0
+    Reason VARCHAR(100) not null,
+    Decision VARCHAR(100) not null,
+    primary key (FamNum, Date, ManagerId),
+    foreign key (FamNum) references Family,
+    foreign key (ManagerId) references Manager (EId),
+    check (ManagerID >= 100000000 and ManagerId <= 999999999),
+    check (FamNum>=0)
+);
+
+create table DontKnow(
+    FamNum INTEGER primary key,
+    Date VARCHAR(100),
+    ManagerId INTEGER, --first number is not 0
+    ManagerToPassID INTEGER not null , --first number is not 0
+    Reason VARCHAR(100) not null,
+    primary key (FamNum, Date, ManagerId),
+    foreign key (FamNum, Date, ManagerId) references QuittingRequest,
+    foreign key (ManagerToPassID) references Manager(EId) ,
+    check (ManagerToPassID != ManagerId)
+);
+
+create table Streamer(
+    FamNum INTEGER,
+    StreamerNumber INTEGER,
+    primary key (FamNum, StreamerNumber),
+    foreign key (FamNum) references Family,
+    check (FamNum>=0),
+    check (StreamerNumber>=0)
+);
+
+create table Broke(
+    FamNum INTEGER,
+    StreamerNumber INTEGER,
+    primary key (FamNum, StreamerNumber),
+    Price INTEGER not null ,
+    Date VARCHAR(100) not null, -- לעשות בדיקה על התאריך
+    TechId INTEGER, --first number is not 0
+    foreign key (FamNum,StreamerNumber) references Streamer,
+    foreign key (TechId) references TechExpert (EId),
+    check (FamNum >= 0),
+    check (StreamerNumber >= 0),
+    check (Price >= 0)
+);
+
+create table Channel(
+    ChannelNumber Integer primary key,
+    ChannelName VARCHAR(100) not null,
+    check (ChannelNumber > 0)
+);
